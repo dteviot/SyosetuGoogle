@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "SyosetuGoogle",
+  "version": "0.1.0.0",
+  "icons": {
+    "128": "logo.png"
+  },
+  "permissions": [
+    "downloads",
+    "tabs", 
+    "<all_urls>"
+  ],
+  "browser_action": {
+    "browser_style": false,
+    "default_title": "",
+    "default_icon": "logo.png",
+    "default_popup": "popup.html"
+  },
+  "incognito": "split",
+  "minimum_chrome_version": "66"
+}
