@@ -53,14 +53,24 @@ var main = (function () {
         initialWebPage = dom;
         initialUrl = url;
 
-        if (!isSyosetuUrl(url)) {
-            alert("Is not Syosetu!");
+        if (isSyosetuUrl(url)) {
+            importTranslatedJapanese(dom);
             return;
         }
 
+        alert("Is not Syosetu!");
+        importFile(dom);
+    }
+
+    function enableControls() {
         document.getElementById("LoadOriginalJapanese").hidden = false;
         document.getElementById("SaveToFile").hidden = false;
+        document.getElementById("ToGrid").hidden = false;
+    }
 
+
+    function importTranslatedJapanese(dom) {
+        enableControls();
         googleContent = extractChapterContent(dom);
 
         let title = document.getElementById("title");
@@ -70,6 +80,14 @@ var main = (function () {
         for(let p of googleContent.paragraphs) {
             body.appendChild(p);
         }
+    }
+
+    function importFile(dom) {
+        enableControls();
+        let content = dom.getElementById("Translated");
+        let oldContent = document.getElementById("Translated");
+        oldContent.parentElement.insertBefore(content, oldContent);
+        oldContent.remove();    
     }
 
     function isSyosetuUrl(url) {
@@ -149,6 +167,18 @@ var main = (function () {
     }
 
     function constructFileName() {
+        if (initialUrl.startsWith("http")) {
+            return constructFileNameFromHttp();
+        }
+        return constructFileNameFromFile();
+    }
+
+    function constructFileNameFromFile() {
+        let split = initialUrl.split("/");
+        return split[split.length - 1];
+    }
+
+    function constructFileNameFromHttp() {
         let split = initialUrl.split("/")
             .filter(s => !Util.isNullOrEmpty(s));
         let chapterNum = '000' + split[split.length - 1];
@@ -157,7 +187,9 @@ var main = (function () {
     }
 
     function constructHtmlToSave() {
-        let dom = new DOMParser().parseFromString("<html><head><title></title></head><body></body></html>", "text/html");
+        let dom = new DOMParser().parseFromString("<html><head><title></title>"+
+            "<style>table {border-collapse: collapse;} table, th, td {border: 1px solid black;}</style>"+
+            "</head><body></body></html>", "text/html");
         let content = document.getElementById("Translated");
         dom.body.appendChild(dom.importNode(content, true));
         flattenFontElements(dom);
@@ -201,9 +233,63 @@ var main = (function () {
         }
     }
 
+    function toGrid() {
+        let paragraphs = [...document.querySelectorAll("#Translated p")];
+        let table = document.createElement("table");
+        for(let p of paragraphs) {
+            let row = createRow(p);
+            table.appendChild(row);
+            if (row.getAttribute("lang") == "en") {
+                table.appendChild(createEmptyRow());
+            }
+            p.remove();
+        }
+        let translated = document.getElementById("Translated");
+        for(let c of [...translated.children]) {
+            c.remove();
+        }
+        translated.appendChild(table);
+    }
+
+    function createRow(paragraph) {
+        let row = document.createElement("tr");
+        let td = document.createElement("td");
+        row.appendChild(td);
+        if (paragraph.id != null) {
+            row.id = paragraph.id;
+        }
+        let lang = paragraph.getAttribute("lang");
+        if (lang != null) {
+            row.setAttribute("lang", lang);
+            td.textContent = (lang == "en") ? "Google" : "Original";
+        }
+        td = document.createElement("td");
+        row.appendChild(td);
+        moveChildNodes(paragraph, td);
+        return row;
+    }
+
+    function moveChildNodes(from, to) {
+        while (from.hasChildNodes()) {
+            let node = from.childNodes[0];
+            to.appendChild(node);
+        };
+    }
+
+    function createEmptyRow() {
+        let row = document.createElement("tr");
+        let td = document.createElement("td");
+        row.appendChild(td);
+        td.textContent = "Mine";
+        row.appendChild(document.createElement("td"));
+        row.className = "Edited";
+        return row;
+    }
+
     function connectControls() {
         document.getElementById("LoadOriginalJapanese").onclick = loadOriginalJapanese;
         document.getElementById("SaveToFile").onclick = saveToFile;
+        document.getElementById("ToGrid").onclick = toGrid;
     }
 
     // actions to do when window opened
