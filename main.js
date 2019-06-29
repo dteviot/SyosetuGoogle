@@ -240,6 +240,7 @@ var main = (function () {
             let row = createRow(p);
             table.appendChild(row);
             if (row.getAttribute("lang") == "en") {
+                table.appendChild(createBingRow());
                 table.appendChild(createEmptyRow());
             }
             p.remove();
@@ -283,6 +284,21 @@ var main = (function () {
         td.textContent = "Mine";
         row.appendChild(document.createElement("td"));
         row.className = "Edited";
+        return row;
+    }
+
+    function createBingRow() {
+        let row = document.createElement("tr");
+        row.className = "Bing";
+        let td = document.createElement("td");
+        td.textContent = "Bing";
+        row.appendChild(td);
+        td = document.createElement("td");
+        row.appendChild(td);
+        let button = document.createElement("button");
+        button.appendChild(document.createTextNode("Remove Row"));
+        button.onclick = () => row.remove();
+        td.appendChild(button);
         return row;
     }
 
