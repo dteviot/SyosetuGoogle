@@ -63,11 +63,10 @@ var main = (function () {
     }
 
     function enableControls() {
-        document.getElementById("LoadOriginalJapanese").hidden = false;
-        document.getElementById("SaveToFile").hidden = false;
-        document.getElementById("ToGrid").hidden = false;
+        for(let button of document.querySelectorAll("button")) {
+            button.hidden = false;
+        }
     }
-
 
     function importTranslatedJapanese(dom) {
         enableControls();
@@ -211,6 +210,10 @@ var main = (function () {
         let text = '\r\n' + indent;
         let node = dom.createTextNode(text);
         element.parentElement.insertBefore(node, element);
+
+        if (element.lastElementChild !== null) {
+            element.appendChild(dom.createTextNode(text));
+        }
     }
 
     function flattenFontElements(dom) {
@@ -302,10 +305,21 @@ var main = (function () {
         return row;
     }
 
+    function showMyTranslatedOnly() {
+        let finished = document.getElementById("Finished");
+        for(let cell of document.querySelectorAll("tr.Edited td:nth-of-type(2)")) {
+            finished.appendChild(document.createTextNode("\r\n"));
+            let p = document.createElement("p");
+            p.appendChild(document.createTextNode(cell.textContent));
+            finished.appendChild(p);
+        }
+    }
+
     function connectControls() {
         document.getElementById("LoadOriginalJapanese").onclick = loadOriginalJapanese;
         document.getElementById("SaveToFile").onclick = saveToFile;
         document.getElementById("ToGrid").onclick = toGrid;
+        document.getElementById("ShowMyTranslatedOnly").onclick = showMyTranslatedOnly;
     }
 
     // actions to do when window opened
