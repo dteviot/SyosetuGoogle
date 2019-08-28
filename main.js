@@ -305,9 +305,17 @@ var main = (function () {
         return row;
     }
 
+    function makeFairyDoc() {
+        extractRows("tr[lang='jp'] td:nth-of-type(2), tr.Edited td:nth-of-type(2)");
+    }
+
     function showMyTranslatedOnly() {
+        extractRows("tr.Edited td:nth-of-type(2)");
+    }
+
+    function extractRows(selector) {
         let finished = document.getElementById("Finished");
-        for(let cell of document.querySelectorAll("tr.Edited td:nth-of-type(2)")) {
+        for(let cell of document.querySelectorAll(selector)) {
             finished.appendChild(document.createTextNode("\r\n"));
             let p = document.createElement("p");
             p.appendChild(document.createTextNode(cell.textContent));
@@ -320,6 +328,7 @@ var main = (function () {
         document.getElementById("SaveToFile").onclick = saveToFile;
         document.getElementById("ToGrid").onclick = toGrid;
         document.getElementById("ShowMyTranslatedOnly").onclick = showMyTranslatedOnly;
+        document.getElementById("MakeFairyDoc").onclick = makeFairyDoc;
     }
 
     // actions to do when window opened
