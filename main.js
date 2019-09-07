@@ -309,6 +309,18 @@ var main = (function () {
         extractRows("tr[lang='jp'] td:nth-of-type(2), tr.Edited td:nth-of-type(2)");
     }
 
+    function showMissedText() {
+        let finished = document.getElementById("Finished");
+        for(let cell of document.querySelectorAll("tr")) {
+            cell.hidden = true;
+            let td = cell.querySelector("td:nth-of-type(2)");
+            let text = td.textContent.trim();
+            if (text === "") {
+                cell.hidden = false;
+            }
+        }
+    }
+
     function showMyTranslatedOnly() {
         extractRows("tr.Edited td:nth-of-type(2)");
     }
@@ -329,6 +341,7 @@ var main = (function () {
         document.getElementById("ToGrid").onclick = toGrid;
         document.getElementById("ShowMyTranslatedOnly").onclick = showMyTranslatedOnly;
         document.getElementById("MakeFairyDoc").onclick = makeFairyDoc;
+        document.getElementById("ShowMissedText").onclick = showMissedText;
     }
 
     // actions to do when window opened
