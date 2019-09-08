@@ -240,15 +240,20 @@ var main = (function () {
         let paragraphs = [...document.querySelectorAll("#Translated p")];
         let table = document.createElement("table");
         let originalJapanese = "";
+        let originalId = "L0";
         for(let p of paragraphs) {
+            originalId = setLastSeenId(p, originalId);
             if (isOriginalJapanses(p)) {
                 originalJapanese = p.textContent.trim();
             }
             let row = createRow(p);
+            addRefToOriginalText(row, p, originalId);
             table.appendChild(row);
             if (row.getAttribute("lang") == "en") {
-                table.appendChild(createBingRow());
-                table.appendChild(createRowForMyTranslation(originalJapanese));
+                let newRow = table.appendChild(createBingRow());
+                addRefToOriginalText(newRow, p, originalId);
+                newRow = table.appendChild(createRowForMyTranslation(originalJapanese));
+                addRefToOriginalText(newRow, p, originalId);
             }
             p.remove();
         }
@@ -257,6 +262,17 @@ var main = (function () {
             c.remove();
         }
         translated.appendChild(table);
+    }
+
+    function setLastSeenId(paragraph, originalId) {
+        let id = paragraph.id;
+        return (id === "") ? originalId : id;
+    }
+
+    function addRefToOriginalText(row, p, originalId) {
+        if (!isOriginalJapanses(p)) {
+            row.setAttribute("orig", originalId);
+        }
     }
 
     function isOriginalJapanses(paragraph) {
@@ -268,7 +284,7 @@ var main = (function () {
         let row = document.createElement("tr");
         let td = document.createElement("td");
         row.appendChild(td);
-        if (paragraph.id != null) {
+        if ((paragraph.id != null) && isOriginalJapanses(paragraph)) {
             row.id = paragraph.id;
         }
         let lang = paragraph.getAttribute("lang");
