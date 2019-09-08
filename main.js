@@ -239,12 +239,16 @@ var main = (function () {
     function toGrid() {
         let paragraphs = [...document.querySelectorAll("#Translated p")];
         let table = document.createElement("table");
+        let originalJapanese = "";
         for(let p of paragraphs) {
+            if (isOriginalJapanses(p)) {
+                originalJapanese = p.textContent.trim();
+            }
             let row = createRow(p);
             table.appendChild(row);
             if (row.getAttribute("lang") == "en") {
                 table.appendChild(createBingRow());
-                table.appendChild(createEmptyRow());
+                table.appendChild(createRowForMyTranslation(originalJapanese));
             }
             p.remove();
         }
@@ -253,6 +257,11 @@ var main = (function () {
             c.remove();
         }
         translated.appendChild(table);
+    }
+
+    function isOriginalJapanses(paragraph) {
+        let lang = paragraph.getAttribute("lang");
+        return lang === "jp";
     }
 
     function createRow(paragraph) {
@@ -280,12 +289,14 @@ var main = (function () {
         };
     }
 
-    function createEmptyRow() {
+    function createRowForMyTranslation(originalJapanese) {
         let row = document.createElement("tr");
         let td = document.createElement("td");
         row.appendChild(td);
         td.textContent = "Mine";
-        row.appendChild(document.createElement("td"));
+        td = document.createElement("td");
+        row.appendChild(td);
+        td.textContent = Language.notesForMyTranslation(originalJapanese);
         row.className = "Edited";
         return row;
     }
