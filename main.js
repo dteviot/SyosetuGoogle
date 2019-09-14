@@ -109,6 +109,7 @@ var main = (function () {
 
     function interleaveParagraps(japaneseDom) {
         let japaneseContent = extractChapterContent(japaneseDom);
+        japaneseContent.title.id = "L0";
         interleaveParagraph(japaneseContent.title, googleContent.title);
         for(let jp of japaneseContent.paragraphs) {
             let english = document.getElementById(jp.id);
