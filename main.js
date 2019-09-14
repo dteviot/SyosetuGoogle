@@ -8,10 +8,11 @@ var main = (function () {
     // this will be called when message listener fires
     function onMessageListener(message, sender, sendResponse) {  // eslint-disable-line no-unused-vars
         if (message.messageType == "SyosetuGoogle-ParseResults") {
-            chrome.runtime.onMessage.removeListener(onMessageListener);
             // convert the string returned from content script back into a DOM
             let dom = new DOMParser().parseFromString(message.document, "text/html");
             populateUiWithDom(message.url, dom);
+        } else if (message.messageType == "SyosetuGoogle-TranslatedText") {
+            Bing.onMessageListener(message);
         }
     };
 
@@ -325,10 +326,6 @@ var main = (function () {
         row.appendChild(td);
         td = document.createElement("td");
         row.appendChild(td);
-        let button = document.createElement("button");
-        button.appendChild(document.createTextNode("Remove Row"));
-        button.onclick = () => row.remove();
-        td.appendChild(button);
         return row;
     }
 
@@ -364,6 +361,7 @@ var main = (function () {
 
     function connectControls() {
         document.getElementById("LoadOriginalJapanese").onclick = loadOriginalJapanese;
+        document.getElementById("LoadBing").onclick = Bing.doTranslation;
         document.getElementById("SaveToFile").onclick = saveToFile;
         document.getElementById("ToGrid").onclick = toGrid;
         document.getElementById("ShowMyTranslatedOnly").onclick = showMyTranslatedOnly;

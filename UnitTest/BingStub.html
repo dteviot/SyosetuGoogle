@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Bing Translator Simulator</title>
+</head>
+<body>
+    <h1>Bing Translator Simulator</h1>
+
+    <select id="tta_srcsl" style="width: 106px;" aria-label="Input Language Selection Dropdown">
+        <option value="auto-detect" selected="selected">Auto-Detect</option>
+        <option value="af">Afrikaans</option>
+        <option value="en">English</option>
+        <option value="ja">Japanese</option>
+        <option value="tlh">Klingon</option>
+    </select>
+
+    <textarea id="tta_input" class=" tta_focusTextLarge notxt" dir="ltr" style="height: 120px;" aria-label="Input text area" autofocus="autofocus" placeholder="Enter text or URL"></textarea>
+
+    <select id="tta_tgtsl" style="width: 79px;" aria-label="Output Language Selection Dropdown">
+        <option value="af" selected="selected">Afrikaans</option>
+        <option value="en" >English</option>
+        <option value="ja">Japanese</option>
+        <option value="tlh">Klingon</option>
+    </select>
+
+    <textarea readonly="readonly" id="tta_output" class=" tta_focusTextLarge " dir="ltr" placeholder="Translation" tabindex="0" aria-label="Output text area" style="height: 120px"></textarea>
+
+    <script>
+        let element = document.querySelector("textarea#tta_input");
+        element.addEventListener('input', function (e) {
+            let outp = document.querySelector("textarea#tta_output");
+            outp.value = element.value;
+        });
+    </script>
+
+</body>
+</html>
