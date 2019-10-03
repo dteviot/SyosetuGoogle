@@ -340,7 +340,7 @@ var main = (function () {
             cell.hidden = true;
             let td = cell.querySelector("td:nth-of-type(2)");
             let text = td.textContent.trim();
-            if (text === "") {
+            if ((text === "") || (text === "「」")) {
                 cell.hidden = false;
             }
         }
