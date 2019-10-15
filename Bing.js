@@ -66,20 +66,24 @@ class Bing {
         );
     }
 
-    static findTabWithBing() {
+    static createBingTab() {
         return new Promise(function (resolve, reject) {
-            chrome.tabs.query({ url: "https://www.bing.com/translator" }, function (tabs) {
-                if ((tabs != null) && (0 < tabs.length)) {
-                    resolve(tabs[0].id);
-                } else {
-                    reject("No Bing Tab found");
-                };
-            });
+            chrome.tabs.create({ url: "https://www.bing.com/translator", active: false },
+                function (tab) {
+                    resolve(tab.id);
+                }
+            );
+        });
+    }
+
+    static closeBingTab(tabId) {
+        return new Promise(function (resolve, reject) {
+            chrome.tabs.remove(tabId, () => resolve());
         });
     }
 
     static doTranslation() {
-        Bing.findTabWithBing().then(
+        Bing.createBingTab().then(
             tabId => Bing.injectScript(tabId)
         ).catch(
             e => alert(e)
@@ -97,7 +101,9 @@ class Bing {
             return Bing.sleep(20000)
                 .then(() => chrome.tabs.sendMessage(Bing.tabId, message));
         } else {
-            alert("finished");
+            Bing.closeBingTab(Bing.tabId).then(
+                () => alert("finished")
+            );
         }
     }
 
