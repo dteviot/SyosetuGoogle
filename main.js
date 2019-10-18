@@ -358,6 +358,8 @@ var main = (function () {
             p.appendChild(document.createTextNode(cell.textContent));
             finished.appendChild(p);
         }
+        document.getElementById("controls").hidden = true;
+        document.getElementById("Translated").hidden = true;
     }
 
     function connectControls() {
