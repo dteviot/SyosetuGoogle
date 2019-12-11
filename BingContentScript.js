@@ -62,14 +62,14 @@ var main = (function () {
     }
 
     function insertTextTotranslateIntoBing(toTranslate) {
-        let textArea = window.document.querySelector("textarea#tta_input");
+        let textArea = window.document.querySelector("textarea#tta_input_ta");
         textArea.value = "";
         textArea.focus();
         document.execCommand("insertText", false /*no UI*/, toTranslate);
     }
 
     function fetchTranslatedTextFromBing() {
-        let textArea = window.document.querySelector("textarea#tta_output");
+        let textArea = window.document.querySelector("textarea#tta_output_ta");
         return textArea.value;
     }
 
