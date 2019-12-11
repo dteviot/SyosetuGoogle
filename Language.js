@@ -27,13 +27,11 @@ class Language {
     }
 
     static hasSuttering(s) {
-        // only found if speaking
-        if (Language.isJapaneseQuoted(s)) {
-            let temp = Language.stripJapaneseQuotes(s).trim();
-            for(let i = 0; i < s.length - 2; ++i) {
-                if (Language.isPosibleStutter(temp.substring(i, i + 3))) {
-                    return true;
-                }
+        // Stuttering doesn't only occur in spoken text
+        let temp = Language.stripJapaneseQuotes(s).trim();
+        for(let i = 0; i < s.length - 2; ++i) {
+            if (Language.isPosibleStutter(temp.substring(i, i + 3))) {
+                return true;
             }
         }
         return false;
