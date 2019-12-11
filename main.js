@@ -196,7 +196,7 @@ var main = (function () {
         flattenFontElements(dom);
         crudePrettyPrint(dom, dom.getRootNode().children[0], '', '  ');
         let htmlAsText = [dom.all[0].outerHTML];
-        return new Blob(htmlAsText, {type : "text"});
+        return new Blob(htmlAsText, {type : "text/html"});
     }
 
     function crudePrettyPrint(dom, element, indent, indentIncrement) {
