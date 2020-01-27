@@ -18,5 +18,14 @@ class Util {
     static isStringWhiteSpace(s) {
         return !(/\S/.test(s));
     }
+
+    static labelElementWithSource(element, source) {
+        element.setAttribute("source", source);
+        let span = document.createElement("span");
+        span.className = "source";
+        span.appendChild(document.createTextNode("(" + source + ")"));
+        element.prepend(span);
+        return element;
+    }
 }
 

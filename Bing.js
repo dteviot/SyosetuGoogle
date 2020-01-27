@@ -19,27 +19,34 @@ class Bing {
     };
 
     static buildListOfLinesToSend() {
-        let rows = [...document.querySelectorAll("tr.Bing")]
-           .map(Bing.buildEntryToTranslate)
-           .filter(Bing.isWorthTranslating);
+        let rows = [...document.querySelectorAll("p[source='syosetu']")]
+           .filter(Bing.isWorthTranslating)
+           .map(Bing.buildTranslateRequest);
         Bing.linesToTranslate = rows.reverse();
+        return Bing.linesToTranslate;
     }
 
-    static buildEntryToTranslate(element) {
-        let textID = element.getAttribute("orig");
-        let toTranslate = document.getElementById(textID).querySelector("td:nth-of-type(2)").textContent;
-        let destination = element.querySelector("td:nth-of-type(2)")
+    static buildTranslateRequest(element) {
         return {
-            textID: textID,
-            toTranslate: toTranslate,
-            destination: destination
+            textID: element.id,
+            toTranslate: Bing.textToTranslate(element),
         }
     }
 
+    static textToTranslate(element) {
+        // strip leading "(syosetu)"
+        return element.textContent.trim().substring(9).trim();
+    }
+
     static isWorthTranslating(entry) {
-        let text = entry.toTranslate.trim();
+        let text = Bing.textToTranslate(entry);
         return text !== "..." 
-            && (entry.destination.textContent === "");
+            && !Bing.isBingTranslated(entry)
+    }
+
+    static isBingTranslated(entry) {
+       let destination = document.querySelector(`p[orig='${entry.id}'][source='bing']`);
+       return destination !== null;
     }
 
     static addTranslation(message) {
@@ -51,7 +58,17 @@ class Bing {
             alert("Reply doesn't match expected ID");
             return;
         }
-        entry.destination.textContent = message.translated;
+
+        let insertAfter = document.querySelector(`p[orig='${entry.textID}']`);
+
+        let destination = document.createElement("p");
+        destination.setAttribute("source", "bing");
+        destination.setAttribute("orig", entry.textID);
+        destination.setAttribute("lang", "en");
+        Util.labelElementWithSource(destination, "bing");
+        destination.appendChild(document.createTextNode(message.translated));
+
+        insertAfter.parentElement.insertBefore(destination, insertAfter.nextSibling);
         Bing.linesToTranslate.pop();
     }
 

@@ -74,11 +74,11 @@ var main = (function () {
         googleContent = extractChapterContent(dom);
 
         let title = document.getElementById("title");
-        title.appendChild(googleContent.title);
+        title.appendChild(Util.labelElementWithSource(googleContent.title, "google"));
 
         let body = document.getElementById("body");
         for(let p of googleContent.paragraphs) {
-            body.appendChild(p);
+            body.appendChild(Util.labelElementWithSource(p, "google"));
         }
     }
 
@@ -121,9 +121,12 @@ var main = (function () {
 
     function interleaveParagraph(japanese, english) {
         if (!Util.isNullOrEmpty(japanese.textContent)) {
-            english.parentElement.insertBefore(japanese, english);
+            let lebelled = Util.labelElementWithSource(japanese, "syosetu");
+            english.parentElement.insertBefore(lebelled, english);
             japanese.setAttribute("lang", "jp");
             english.setAttribute("lang", "en");
+            english.setAttribute("orig", japanese.id);
+            english.removeAttribute("id");
         }
     }
 
@@ -239,6 +242,9 @@ var main = (function () {
     }
 
     function toGrid() {
+        let rubbish = [...document.querySelectorAll("p span.source")];
+        rubbish.forEach(e => e.remove());
+
         let paragraphs = [...document.querySelectorAll("#Translated p")];
         let table = document.createElement("table");
         let originalJapanese = "";
@@ -251,10 +257,8 @@ var main = (function () {
             let row = createRow(p);
             addRefToOriginalText(row, p, originalId);
             table.appendChild(row);
-            if (row.getAttribute("lang") == "en") {
-                let newRow = table.appendChild(createBingRow());
-                addRefToOriginalText(newRow, p, originalId);
-                newRow = table.appendChild(createRowForMyTranslation(originalJapanese));
+            if (row.getAttribute("source") == "bing") {
+                let newRow = table.appendChild(createRowForMyTranslation(originalJapanese));
                 addRefToOriginalText(newRow, p, originalId);
             }
             p.remove();
@@ -289,10 +293,11 @@ var main = (function () {
         if ((paragraph.id != null) && isOriginalJapanses(paragraph)) {
             row.id = paragraph.id;
         }
-        let lang = paragraph.getAttribute("lang");
-        if (lang != null) {
-            row.setAttribute("lang", lang);
-            td.textContent = (lang == "en") ? "Google" : "Original";
+        let source = paragraph.getAttribute("source");
+        if (source != null) {
+            row.setAttribute("source", source);
+            row.setAttribute("lang", paragraph.getAttribute("lang"));
+            td.textContent = source;
         }
         td = document.createElement("td");
         row.appendChild(td);

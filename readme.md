@@ -9,8 +9,10 @@ Chrome Extension to assist in machine translating Chapters from Syosetu.
 3. When Google offers to translate, accept and scroll down page until all text for chapter has been translated to English
 4. Click on the "SyosetuGoogle" icon on top right tool bar
 5. On tab that opens, Story text should be visible.  Click on the "Load Original Japanese" to get the Japanese text interleaved with the English.
-6. Click on "Save To File" button.  Adjust filename as required.
-7. Repeat steps 2 to 7, as required.
+6. Click on the "Load Bing" button.  A Bing tab will open and one sentence every 20 seconds will be translted by Bing.  A message will popup when all sentences have been translated by Bing.
+7. Click on "Save To File" button.  Adjust filename as required.
+8. Repeat steps 2 to 7, as required.
+9. "To Grid", "Show My Translated Only", "Make Doc for Fairy" and "Show Missed Text" can be ignored.
 
 
 ## How to install 
