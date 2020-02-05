@@ -11,17 +11,29 @@ class Bing {
 
     static onMessageListener(message) {  // eslint-disable-line no-unused-vars
         if (message.translated === null) {
-            Bing.buildListOfLinesToSend();
+            Bing.buildListOfLinesToSend(document);
         } else {
-            Bing.addTranslation(message);
+            Bing.addTranslation(document, message);
         }
         Bing.sendLineToTranslate();
     };
 
-    static buildListOfLinesToSend() {
-        let rows = [...document.querySelectorAll("p[source='syosetu']")]
-           .filter(Bing.isWorthTranslating)
-           .map(Bing.buildTranslateRequest);
+    static buildListOfLinesToSend(doc) {
+        let elements = [...doc.querySelectorAll("p[source='syosetu']")]
+            .filter(Bing.isWorthTranslating)
+        let map = new Map()
+        let rows = [];
+        for(let element of elements) {
+            let toTranslate = Bing.textToTranslate(element);
+            let existing = map.get(toTranslate);
+            if (existing) {
+                existing.duplicates.push(element.id);
+            } else {
+                let request = Bing.buildTranslateRequest(element);
+                map.set(toTranslate, request);
+                rows.push(request);
+            }
+        }    
         Bing.linesToTranslate = rows.reverse();
         return Bing.linesToTranslate;
     }
@@ -30,6 +42,7 @@ class Bing {
         return {
             textID: element.id,
             toTranslate: Bing.textToTranslate(element),
+            duplicates: []
         }
     }
 
@@ -49,7 +62,7 @@ class Bing {
        return destination !== null;
     }
 
-    static addTranslation(message) {
+    static addTranslation(doc, message) {
         // dummy
         let entry = Bing.linesToTranslate[Bing.linesToTranslate.length - 1];
         if (entry.textID !== message.textID) {
@@ -59,17 +72,25 @@ class Bing {
             return;
         }
 
-        let insertAfter = document.querySelector(`p[orig='${entry.textID}']`);
+        Bing.insertTranslatedText(doc, message.textID, message.translated);
+        for(let dupe of entry.duplicates) {
+            Bing.insertTranslatedText(doc, dupe, message.translated);
+        }
 
-        let destination = document.createElement("p");
+        Bing.linesToTranslate.pop();
+    }
+
+    static insertTranslatedText(doc, textID, translated) {
+        let insertAfter = doc.querySelector(`p[orig='${textID}']`);
+
+        let destination = doc.createElement("p");
         destination.setAttribute("source", "bing");
-        destination.setAttribute("orig", entry.textID);
+        destination.setAttribute("orig", textID);
         destination.setAttribute("lang", "en");
         Util.labelElementWithSource(destination, "bing");
-        destination.appendChild(document.createTextNode(message.translated));
+        destination.appendChild(doc.createTextNode(translated));
 
         insertAfter.parentElement.insertBefore(destination, insertAfter.nextSibling);
-        Bing.linesToTranslate.pop();
     }
 
     static injectScript(tabId) {

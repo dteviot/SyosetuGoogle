@@ -50,6 +50,7 @@ var main = (function () {
             let newText = fetchTranslatedTextFromBing();
             if ((newText !== oldText) && (newText !== " ...")
                 && (newText !== (oldText + " ..."))) {
+                clearTranslatedTextFromBing();
                 return returnTranslatedText(newText, message.textID);
             } else {
                 return waitForTranslation(oldText, message);
@@ -68,9 +69,16 @@ var main = (function () {
         document.execCommand("insertText", false /*no UI*/, toTranslate);
     }
 
+    function getTranslatedTextArea() {
+        return window.document.querySelector("textarea#tta_output_ta");
+    }
+
     function fetchTranslatedTextFromBing() {
-        let textArea = window.document.querySelector("textarea#tta_output_ta");
-        return textArea.value;
+        return getTranslatedTextArea().value;
+    }
+
+    function clearTranslatedTextFromBing() {
+        getTranslatedTextArea().value = "";
     }
 
     function doPrep() {
