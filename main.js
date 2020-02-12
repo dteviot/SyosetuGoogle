@@ -56,6 +56,7 @@ var main = (function () {
 
         if (isSyosetuUrl(url)) {
             importTranslatedJapanese(dom);
+            addAuthorNoteDivider();
             return;
         }
 
@@ -82,6 +83,14 @@ var main = (function () {
         }
     }
 
+    function addAuthorNoteDivider() {
+        let element = document.querySelector("p#La1");
+        if (element != null) {
+            let hr = document.createElement("hr");
+            element.parentElement.insertBefore(hr, element);
+        }
+    }
+
     function importFile(dom) {
         enableControls();
         let content = dom.getElementById("Translated");
@@ -98,7 +107,7 @@ var main = (function () {
     function extractChapterContent(dom) {
         return {
             title: cloneElement(dom.querySelector("div#novel_contents .novel_subtitle")),
-            paragraphs: [...dom.querySelectorAll("div#novel_honbun p")]
+            paragraphs: [...dom.querySelectorAll("div#novel_honbun p, div#novel_a p")]
                 .map(p => cloneElement(p))
         };
     }
@@ -367,6 +376,18 @@ var main = (function () {
         document.getElementById("Translated").hidden = true;
     }
 
+    function removeAuthorNote() {
+        let paragraphs = [...document.querySelectorAll("p")]
+            .filter(p => p.id.startsWith("La"));
+        for (let p of paragraphs) {
+            p.remove();
+        }
+        let hr = document.querySelector("hr");
+        if (hr != null) {
+            hr.remove();
+        }
+    }
+
     function connectControls() {
         document.getElementById("LoadOriginalJapanese").onclick = loadOriginalJapanese;
         document.getElementById("LoadBing").onclick = Bing.doTranslation;
@@ -375,6 +396,7 @@ var main = (function () {
         document.getElementById("ShowMyTranslatedOnly").onclick = showMyTranslatedOnly;
         document.getElementById("MakeFairyDoc").onclick = makeFairyDoc;
         document.getElementById("ShowMissedText").onclick = showMissedText;
+        document.getElementById("RemoveAuthorNote").onclick = removeAuthorNote;
     }
 
     // actions to do when window opened
