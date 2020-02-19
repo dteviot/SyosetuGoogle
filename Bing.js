@@ -4,6 +4,30 @@
 
 "use strict";
 
+class ProgCounter {
+    constructor(total, stepDurationSeconds) {
+        this.total = total;
+        this.stepDurationSeconds = stepDurationSeconds;
+        this.done = 0;
+    }
+
+    makeProgressString() {
+        let remaining = this.total - this.done;
+        let eta = remaining * this.stepDurationSeconds;
+        let secs = eta % 60;
+        let mins = (eta - secs) / 60;
+        return `Remaining = ${remaining}, Done = ${this.done}, Total = ${this.total}, Eta = ${mins} min ${secs} secs`
+    }
+
+    showProgress() {
+        document.getElementById("progressDisplay").textContent = this.makeProgressString();
+    }
+
+    onCompleteStep() {
+        ++this.done;
+    }
+}
+
 class Bing {
     constructor() {
         Bing.textsToTranslate = new Map();
@@ -11,10 +35,13 @@ class Bing {
 
     static onMessageListener(message) {  // eslint-disable-line no-unused-vars
         if (message.translated === null) {
-            Bing.buildListOfLinesToSend(document);
+            let lines = Bing.buildListOfLinesToSend(document);
+            Bing.progCount = new ProgCounter(lines.length, Bing.stepDurationSeconds);
         } else {
             Bing.addTranslation(document, message);
+            Bing.progCount.onCompleteStep();
         }
+        Bing.progCount.showProgress();
         Bing.sendLineToTranslate();
     };
 
@@ -136,7 +163,7 @@ class Bing {
                 toTranslate: entry.toTranslate,
                 textID: entry.textID
             };
-            return Bing.sleep(20000)
+            return Bing.sleep(Bing.stepDurationSeconds * 1000)
                 .then(() => chrome.tabs.sendMessage(Bing.tabId, message));
         } else {
             Bing.closeBingTab(Bing.tabId).then(
@@ -150,3 +177,4 @@ class Bing {
     }
 }
 
+Bing.stepDurationSeconds = 20;
