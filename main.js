@@ -56,6 +56,7 @@ var main = (function () {
 
         if (isSyosetuUrl(url)) {
             importTranslatedJapanese(dom);
+            addAuthorHeaderNoteDivider();
             addAuthorNoteDivider();
             return;
         }
@@ -91,6 +92,16 @@ var main = (function () {
         }
     }
 
+    function addAuthorHeaderNoteDivider() {
+        let elements = [...document.querySelectorAll("p")]
+           .filter(p => p.id.startsWith("Lp"));
+        if (0 < elements.length) {
+            let element = elements[elements.length - 1];
+            let hr = document.createElement("hr");
+            element.parentElement.insertBefore(hr, element.nextSibling);
+        }
+    }
+
     function importFile(dom) {
         enableControls();
         let content = dom.getElementById("Translated");
@@ -107,7 +118,7 @@ var main = (function () {
     function extractChapterContent(dom) {
         return {
             title: cloneElement(dom.querySelector("div#novel_contents .novel_subtitle")),
-            paragraphs: [...dom.querySelectorAll("div#novel_honbun p, div#novel_a p")]
+            paragraphs: [...dom.querySelectorAll("div#novel_p p, div#novel_honbun p, div#novel_a p")]
                 .map(p => cloneElement(p))
         };
     }
